@@ -14,18 +14,21 @@ class AdminController extends Controller
     {
         $totalUsers = User::where('role', 'user')->count();
 
-        $totalColocations = Colocation::where('status','active');
+        $totalColocations = Colocation::where('status','active')->count();
 
         $totalExpenses = Expense::sum('amount');
 
         $bannedUsersCount = User::whereNotNull('banned_at')->count();
+
+        $users = User::all();
 
 
         return view('admin.dashboard', compact(
             'totalUsers',
             'totalColocations', 
             'totalExpenses', 
-            'bannedUsersCount'
+            'bannedUsersCount',
+            'users',
         ));
     }
     
