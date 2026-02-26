@@ -23,7 +23,7 @@ class User extends Authenticatable
         'password',
         'role',
         'reputation',
-        'is_banned'
+        'banned_at'
     ];
 
     /**
