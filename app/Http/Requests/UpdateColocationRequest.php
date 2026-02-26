@@ -23,8 +23,7 @@ class UpdateColocationRequest extends FormRequest
     {
         return [
             'name' => 'required|string|min:3|max:100',
-            'description' => 'required|string',
-            'status' => 'required|in:active,cancelled'
+            'description' => 'nullable|string',
         ];
     }
 }
