@@ -11,7 +11,7 @@ class StoreColocationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,7 @@ class StoreColocationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|min:3|max:100|unique:colocations,name',
+            'name' => 'required|string|min:3|max:100',
             'description' => 'required|string',
             'status' => 'required|in:active,cancelled',
         ];
