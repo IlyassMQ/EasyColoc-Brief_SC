@@ -37,11 +37,6 @@
             
 
             <main class="p-8">
-                @if(session('success'))
-                    <div class="p-4 mb-6 text-green-700 bg-green-100 border-l-4 border-green-500 shadow-sm">
-                        {{ session('success') }}
-                    </div>
-                @endif
 
                 @yield('content')
             </main>
