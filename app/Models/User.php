@@ -51,6 +51,13 @@ class User extends Authenticatable
         ];
     }
 
+
+    public function colocations()
+    {
+    return $this->belongsToMany(Colocation::class, 'colocation_user')
+                ->withPivot('role_intern', 'joined_at');
+    }
+
     public function expenses():HasMany
     {
         return $this->hasMany(Expense::class);
