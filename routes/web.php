@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\InvitationController;
+use App\Http\Controllers\Invitations\InvitationsController;
 use App\Http\Controllers\ColocationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\User\DashboardController;
@@ -47,11 +47,15 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/colocations/{colocation}/cancel', [ColocationController::class, 'cancel'])->name('colocations.cancel');
     Route::get('/colocations/{colocation}/edit', [ColocationController::class, 'edit'])->name('colocations.edit');
     Route::put('/colocations/{colocation}', [ColocationController::class, 'update'])->name('colocations.update');
-
+    Route::get('/colocations/{colocation}/invite', [InvitationsController::class, 'create'])->name('invitations.create');
+    Route::post('/colocations/invite', [InvitationsController::class, 'store'])->name('invitations.store');
+    Route::get('/invitations/accept/{token}', [InvitationsController::class, 'accept'])->name('invitations.accept'); 
+    
 });
 
 
-Route::prefix('user')->name('user.')->group(function () {
+
+    Route::prefix('user')->name('user.')->group(function () {
 
     Route::get('/dashboard',[DashboardController::class,'index'])->name('dashboard');
 });
