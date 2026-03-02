@@ -1,24 +1,30 @@
 @extends('layouts.user')
 @section('content')
 <div class="max-w-5xl mx-auto p-6">
-    <div class="mb-6">
-        <a href="{{ route('colocations.index') }}" class="text-gray-500 underline text-sm">← Retour à la liste</a>
-        <h1 class="text-3xl font-bold mt-2">{{ $colocation->name }}</h1>
+    <div class="mb-6 flex justify-between items-center">
+        <div>
+            <a href="{{ route('colocations.index') }}" class="text-gray-500 underline text-sm">← Retour à la liste</a>
+            <h1 class="text-3xl font-bold mt-2">{{ $colocation->name }}</h1>
+        </div>
+
+        @php
+            $isOwner = $members->firstWhere('pivot.role_intern', 'owner')->id === auth()->id();
+        @endphp
+
+        @if($isOwner)
+        <div class="flex space-x-4">
+            <a href="#"
+               class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+               Inviter un membre
+            </a>
+
+            <a href="#"
+               class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+               Ajouter une dépense
+            </a>
+        </div>
+        @endif
     </div>
-
-    <div class="flex space-x-4 mb-6">
-    <!-- Invite button -->
-    <a href="{{ route('invitations.create', $colocation) }}"
-       class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-       Inviter un membre
-    </a>
-
-    <!-- Add Expense button -->
-    <a href="#"
-       class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-       Ajouter une dépense
-    </a>
-</div>
 
     <div class="grid grid-cols-3 gap-6">
         <div class="col-span-1 bg-gray-50 p-4 rounded shadow-sm">
@@ -43,7 +49,7 @@
                         <p class="font-bold">{{ $expense->title }}</p>
                         <p class="text-xs text-gray-500">{{ $expense->payer->name }} • {{ $expense->category->name }}</p>
                     </div>
-                    <div class="text-lg font-mono font-bold">{{$expense->amount }}€</div>
+                    <div class="text-lg font-mono font-bold">{{ number_format($expense->amount,2) }}€</div>
                 </div>
             @empty
                 <p class="text-gray-400 italic">Aucune dépense enregistrée.</p>
