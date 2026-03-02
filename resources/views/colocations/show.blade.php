@@ -13,7 +13,7 @@
 
         @if($isOwner)
         <div class="flex space-x-4">
-            <a href="#"
+            <a href="{{ route('invitations.create', $colocation) }}"
                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                Inviter un membre
             </a>
