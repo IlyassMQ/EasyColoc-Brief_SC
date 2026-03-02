@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Invitations;
 
+use App\Http\Requests\StoreInvitationRequest;
 use App\Models\Colocation;
 use App\Models\Invitation;
 use App\Http\Controllers\Controller;
@@ -22,31 +23,31 @@ class InvitationsController extends Controller
     }
 
     
-    public function store(Request $request)
+    public function store(StoreInvitationRequest $request)
     {
-        $request->validate([
-            'colocation_id' => 'required|exists:colocations,id',
-            'email' => 'required|email|max:255',
-        ]);
+    $colocation = Colocation::findOrFail($request->colocation_id);
 
-        $colocation = Colocation::findOrFail($request->colocation_id);
-        $this->isOwner($colocation);
+    if (!$colocation->users()
+        ->where('user_id', auth()->id())
+        ->wherePivot('role_intern', 'owner')
+        ->exists()) {
+        abort(403, 'Seul le propriétaire peut inviter.');
+    }
 
-        // Create invitation with token
-        $invitation = Invitation::create([
-            'colocation_id' => $colocation->id,
-            'user_id' => Auth::id(), // inviter
-            'email' => $request->email,
-            'token' => Str::random(32),
-            'status' => null,
-        ]);
+    $invitation = Invitation::create([
+        'colocation_id' => $colocation->id,
+        'user_id' => auth()->id(),
+        'email' => $request->email,
+        'token' => Str::random(32),
+        'status' => null,
+    ]);
 
-        // Send email
-        Mail::to($request->email)->send(new InvitationMail($invitation));
+    Mail::to($request->email)
+        ->send(new InvitationMail($invitation));
 
-        return redirect()
-            ->route('colocations.show', $colocation)
-            ->with('success', "Invitation envoyée à {$request->email} !");
+    return redirect()
+        ->route('colocations.show', $colocation)
+        ->with('success', "Invitation envoyée à {$request->email} !");
     }
 
     // Accept the invitation using the token
