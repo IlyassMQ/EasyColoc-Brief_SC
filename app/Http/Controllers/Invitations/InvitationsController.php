@@ -13,7 +13,7 @@ use App\Mail\InvitationMail;
 
 class InvitationsController extends Controller
 {
-    // Show the invitation form
+    
     public function create(Colocation $colocation)
     {
         $this->isOwner($colocation);
@@ -21,7 +21,7 @@ class InvitationsController extends Controller
         return view('invitations.create', compact('colocation'));
     }
 
-    // Store the invitation and send email
+    
     public function store(Request $request)
     {
         $request->validate([
@@ -67,7 +67,7 @@ class InvitationsController extends Controller
             ->with('success', "Vous avez rejoint la colocation !");
     }
 
-    // Check owner helper
+    
     private function isOwner(Colocation $colocation)
     {
         $membership = $colocation->users()
