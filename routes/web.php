@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Expense\ExpenseController;
 use App\Http\Controllers\Invitations\InvitationsController;
 use App\Http\Controllers\ColocationController;
 use App\Http\Controllers\ProfileController;
@@ -50,6 +51,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/colocations/{colocation}/invite', [InvitationsController::class, 'create'])->name('invitations.create');
     Route::post('/colocations/invite', [InvitationsController::class, 'store'])->name('invitations.store');
     Route::get('/invitations/accept/{token}', [InvitationsController::class, 'accept'])->name('invitations.accept'); 
+
+    Route::get('/colocations/{colocation}/expenses/create', [ExpenseController::class, 'create'])->name('expenses.create');
+    Route::post('/colocations/{colocation}/expenses', [ExpenseController::class, 'store'])->name('expenses.store');
     
 });
 
