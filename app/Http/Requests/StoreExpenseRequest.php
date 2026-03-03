@@ -23,7 +23,8 @@ class StoreExpenseRequest extends FormRequest
     {
         return [
             'colocation_id' => 'required|exists:colocations,id',
-            'category_id' => 'required|exists:category,id',
+            'category_id' => 'nullable|exists:category,id',
+            'new_category' => 'nullable|string|min:2|max:255',
             'title' => 'required|string|min:3|max:255',
             'amount' => 'required|numeric|min:1',
             'date' => 'required|date',
