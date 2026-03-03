@@ -121,33 +121,41 @@ public function show(Colocation $colocation)
             ->with('success', 'Colocation annulée avec succès.');
     }
     public function quit(Colocation $colocation)
-    {
+{
     $user = auth()->user();
 
+    // Check if the user is a member
     $membership = $colocation->users()->where('user_id', $user->id)->first();
     if (!$membership) {
         abort(403, 'Vous ne faites pas partie de cette colocation.');
     }
 
-    $hasDebt = $colocation->payments()
-        ->where('payer_id', $user->id)
-        ->whereColumn('payer_id', '!=', 'receiver_id')
-        ->exists();
+    // Simple check: does the user have any unpaid expense shares?
+    $hasDebt = false;
 
-    
-    if ($hasDebt) {
-        $user->reputation -= 1; 
-    } else {
-        $user->reputation += 1;
+    foreach ($colocation->expenses as $expense) {
+        if ($expense->user_id !== $user->id && !$expense->paid) {
+            $hasDebt = true;
+            break; // stop checking if we found one
+        }
     }
+
+    // Update reputation
+    if ($hasDebt) {
+        $user->reputation -= 1; // owes money
+    } else {
+        $user->reputation += 1; // no debt
+    }
+
     $user->save();
 
+    // Remove user from colocation
     $colocation->users()->detach($user->id);
 
     return redirect()
         ->route('colocations.index')
         ->with('success', 'Vous avez quitté la colocation !');
-    }
+}
     
     private function isOwner(Colocation $colocation)
     {

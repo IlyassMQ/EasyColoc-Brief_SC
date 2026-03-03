@@ -19,6 +19,14 @@
         @endphp
 
         <div class="flex space-x-3">
+            {{-- Owner only → Invite member --}}
+            @if($isOwner)
+                <a href="{{ route('invitations.create', $colocation) }}"
+                   class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">
+                    Inviter un membre
+                </a>
+            @endif
+
             {{-- All members → Add expense --}}
             @if($membership)
                 <a href="{{ route('expenses.create', $colocation) }}"
