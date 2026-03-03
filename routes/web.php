@@ -54,6 +54,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/colocations/{colocation}/expenses/create', [ExpenseController::class, 'create'])->name('expenses.create');
     Route::post('/colocations/{colocation}/expenses', [ExpenseController::class, 'store'])->name('expenses.store');
+    Route::post('/colocations/{colocation}/quit', [ColocationController::class, 'quit'])
+        ->name('colocations.quit');
     
 });
 

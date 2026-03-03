@@ -105,7 +105,25 @@ class ColocationController extends Controller
             ->route('colocations.index')
             ->with('success', 'Colocation annulée avec succès.');
     }
+    public function quit(Colocation $colocation)
+    {
+        $user = auth()->user();
 
+        if (!$colocation->users()->where('user_id', $user->id)->exists()) {
+            abort(403, 'Vous ne faites pas partie de cette colocation.');
+        }
+
+        
+        $membership = $colocation->users()->where('user_id', $user->id)->first();
+        if ($membership->pivot->role_intern === 'owner') {
+            return redirect()->route('colocations.show', $colocation)
+                            ->with('error', 'owner ne peut pas quitter la colocation.');
+        }
+
+        $colocation->users()->detach($user->id);
+        return redirect()->route('colocations.index')
+                        ->with('success', 'Vous avez quitté la colocation.');
+    }
     private function isOwner(Colocation $colocation)
     {
         $membership = $colocation->users()
