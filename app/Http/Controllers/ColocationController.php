@@ -46,27 +46,35 @@ class ColocationController extends Controller
             ->with('success', 'Colocation créée avec succès.');
     }
 
-    public function show(Colocation $colocation)
-    {
-        $this->isMember($colocation);
+public function show(Colocation $colocation)
+{
+    $this->isMember($colocation);
 
-        $members = $colocation->users;
-        
-        $expenses = $colocation->expenses()
-            ->with(['payer', 'category'])
-            ->latest()
-            ->take(10)
-            ->get();
-            //pour qui doit à qui
-            $colocation->load('users', 'expenses');
+    $members = $colocation->users;
+    $memberCount = $members->count();
+    $userId = auth()->id();
 
-        $memberCount = $members->count();
+    // All expenses for the “Dernières Dépenses” section
+    $allExpenses = $colocation->expenses()->with(['payer', 'category'])
+        ->latest()
+        ->take(10)
+        ->get();
 
-        $totalExpenses = $colocation->expenses->sum('amount');
-        $individualShare = $memberCount > 0 ? $totalExpenses / $memberCount : 0;
+    // Expenses for "Ce que je dois payer"
+    $expensesToPay = $colocation->expenses()->with(['payer', 'category'])
+        ->get()
+        ->filter(function ($expense) use ($userId, $members) {
+            // Skip if user is the payer or if marked as paid
+            return $expense->user_id !== $userId && ($expense->paid ?? 0) != 1;
+        })
+        ->map(function ($expense) use ($userId, $members) {
+            $usersCount = $members->count(); 
+            $expense->my_share = $usersCount > 0 ? $expense->amount / $usersCount : 0;
+            return $expense;
+        });
 
-        return view('colocations.show', compact('colocation', 'members', 'totalExpenses', 'individualShare','expenses'));
-    }
+    return view('colocations.show', compact('colocation', 'members', 'allExpenses', 'expensesToPay'));
+}
 
     public function edit(Colocation $colocation)
     {
