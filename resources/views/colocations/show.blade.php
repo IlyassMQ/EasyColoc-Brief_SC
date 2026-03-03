@@ -17,6 +17,28 @@
             $isOwner = $owner && $owner->id === auth()->id();
             $membership = $members->firstWhere('id', auth()->id());
         @endphp
+
+        <div class="flex space-x-3">
+            {{-- All members → Add expense --}}
+            @if($membership)
+                <a href="{{ route('expenses.create', $colocation) }}"
+                   class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition">
+                    Ajouter une dépense
+                </a>
+            @endif
+
+            {{-- Non-owner members → Quit colocation --}}
+            @if($membership && $membership->pivot->role_intern !== 'owner')
+                <form action="{{ route('colocations.quit', $colocation) }}" method="POST"
+                      onsubmit="return confirm('Voulez-vous vraiment quitter cette colocation ?');">
+                    @csrf
+                    <button type="submit"
+                            class="px-4 py-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition">
+                        Quitter la colocation
+                    </button>
+                </form>
+            @endif
+        </div>
     </div>
 
     {{-- GRID --}}
@@ -89,7 +111,7 @@
                     </div>
                 </div>
             @empty
-                <p class="text-gray-400 italic">Vous ne devez rien 🎉</p>
+                <p class="text-gray-400 italic">Vous ne devez rien</p>
             @endforelse
         </div>
 

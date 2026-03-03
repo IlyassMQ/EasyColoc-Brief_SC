@@ -16,7 +16,7 @@
             
             <nav class="px-4 mt-4">
                 <div class="space-y-2">
-                    <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-800">
+                    <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-800">
                     <i class="fas fa-chart-bar"></i>                      
                     <span>Statistique</span>
                     </a>
@@ -25,7 +25,7 @@
                         <p class="px-3 text-xs font-semibold text-gray-500 uppercase">Inventaire</p>
                     </div>
                     
-                    <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-800 transition {{ request()->routeIs('fournisseurs.*') ? 'bg-indigo-600' : '' }}">
+                    <a href="{{ route('user.dashboard') }}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-800 transition {{ request()->routeIs('fournisseurs.*') ? 'bg-indigo-600' : '' }}">
                         <i class="w-5 fas fa-truck"></i>
                         <span>Routour App</span>
                     </a>
