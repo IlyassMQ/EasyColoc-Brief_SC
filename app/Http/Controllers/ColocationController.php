@@ -51,14 +51,21 @@ class ColocationController extends Controller
         $this->isMember($colocation);
 
         $members = $colocation->users;
-
+        
         $expenses = $colocation->expenses()
             ->with(['payer', 'category'])
             ->latest()
             ->take(10)
             ->get();
+            //pour qui doit à qui
+            $colocation->load('users', 'expenses');
 
-        return view('colocations.show', compact('colocation', 'members', 'expenses'));
+        $memberCount = $members->count();
+
+        $totalExpenses = $colocation->expenses->sum('amount');
+        $individualShare = $memberCount > 0 ? $totalExpenses / $memberCount : 0;
+
+        return view('colocations.show', compact('colocation', 'members', 'totalExpenses', 'individualShare','expenses'));
     }
 
     public function edit(Colocation $colocation)
@@ -107,23 +114,33 @@ class ColocationController extends Controller
     }
     public function quit(Colocation $colocation)
     {
-        $user = auth()->user();
+    $user = auth()->user();
 
-        if (!$colocation->users()->where('user_id', $user->id)->exists()) {
-            abort(403, 'Vous ne faites pas partie de cette colocation.');
-        }
-
-        
-        $membership = $colocation->users()->where('user_id', $user->id)->first();
-        if ($membership->pivot->role_intern === 'owner') {
-            return redirect()->route('colocations.show', $colocation)
-                            ->with('error', 'owner ne peut pas quitter la colocation.');
-        }
-
-        $colocation->users()->detach($user->id);
-        return redirect()->route('colocations.index')
-                        ->with('success', 'Vous avez quitté la colocation.');
+    $membership = $colocation->users()->where('user_id', $user->id)->first();
+    if (!$membership) {
+        abort(403, 'Vous ne faites pas partie de cette colocation.');
     }
+
+    $hasDebt = $colocation->payments()
+        ->where('payer_id', $user->id)
+        ->whereColumn('payer_id', '!=', 'receiver_id')
+        ->exists();
+
+    
+    if ($hasDebt) {
+        $user->reputation -= 1; 
+    } else {
+        $user->reputation += 1;
+    }
+    $user->save();
+
+    $colocation->users()->detach($user->id);
+
+    return redirect()
+        ->route('colocations.index')
+        ->with('success', 'Vous avez quitté la colocation !');
+    }
+    
     private function isOwner(Colocation $colocation)
     {
         $membership = $colocation->users()

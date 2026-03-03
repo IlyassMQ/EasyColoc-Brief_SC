@@ -55,7 +55,7 @@
                     <td class="px-6 py-4">{{ number_format($expense->amount, 2) }}€</td>
                     <td class="px-6 py-4">{{ $expense->colocation->name }}</td>
                     <td class="px-6 py-4">{{ $expense->category->name }}</td>
-                    <td class="px-6 py-4">{{ $expense->date->format('d/m/Y') }}</td>
+                    <td class="px-6 py-4">{{ $expense->date }}</td>
                 </tr>
             @empty
                 <tr>

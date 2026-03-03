@@ -93,6 +93,24 @@
             @endforelse
         </div>
 
+        {{-- Expenses summary --}}
+        <div class="mt-6 bg-white p-4 rounded-xl shadow">
+            <h3 class="text-xl font-semibold mb-3">Synthèse des dépenses</h3>
+
+            <p><strong>Total des dépenses :</strong> {{ number_format($totalExpenses, 2) }} €</p>
+            <p><strong>Part individuelle :</strong> {{ number_format($individualShare, 2) }} €</p>
+
+            <h4 class="mt-3 font-medium">Part par colocataire :</h4>
+            <ul class="list-disc list-inside">
+                @foreach($members as $member)
+                    {{-- Skip the logged-in user --}}
+                    @if($member->id !== auth()->id())
+                        <li>{{ $member->name }} : {{ number_format($individualShare, 2) }} €</li>
+                    @endif
+                @endforeach
+            </ul>
+        </div>
+
     </div>
 </div>
 @endsection
