@@ -33,6 +33,13 @@
                     <span>Dashboard</span>
                 </a>
 
+                <!-- Dashboard -->
+                <a href="{{ route('admin.dashboard') }}"
+                   class="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-800 transition>
+                    <i class="fas fa-home w-5"></i>
+                    <span>admin</span>
+                </a>
+
                 <!-- Colocations -->
                 <a href="{{ route('colocations.index') }}"
                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-800 transition">
