@@ -56,6 +56,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/colocations/{colocation}/expenses', [ExpenseController::class, 'store'])->name('expenses.store');
     Route::post('/colocations/{colocation}/quit', [ColocationController::class, 'quit'])
         ->name('colocations.quit');
+
+    Route::patch('/expenses/{expense}/mark-paid', [ExpenseController::class, 'markPaid'])->name('expenses.markPaid');
     
 });
 

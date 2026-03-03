@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Expense extends Model
 {
-    protected $fillable = ['colocation_id', 'category_id', 'user_id', 'title', 'amount', 'date'];
+    protected $fillable = ['colocation_id', 'category_id', 'user_id', 'title', 'amount', 'date','paid'];
 
     
     public function colocation():BelongsTo

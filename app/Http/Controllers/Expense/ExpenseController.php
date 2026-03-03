@@ -57,4 +57,18 @@ class ExpenseController extends Controller
         ->route('colocations.show', $colocation)
         ->with('success', 'Dépense ajoutée avec succès.');
 }
+
+    public function markPaid($id)
+    {
+        $expense = Expense::findOrFail($id);
+
+        // Only owner of the colocation can mark as paid
+        if (auth()->id() !== $expense->colocation->users->firstWhere('pivot.role_intern', 'owner')->id) {
+            abort(403, 'Seul le propriétaire peut marquer une dépense comme payée.');
+        }
+
+        $expense->update(['paid' => true]);
+
+        return back()->with('success', 'Dépense marquée comme payée.');
+    }
 }
