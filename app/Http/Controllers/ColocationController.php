@@ -54,17 +54,16 @@ public function show(Colocation $colocation)
     $memberCount = $members->count();
     $userId = auth()->id();
 
-    // All expenses for the “Dernières Dépenses” section
     $allExpenses = $colocation->expenses()->with(['payer', 'category'])
         ->latest()
         ->take(10)
         ->get();
 
-    // Expenses for "Ce que je dois payer"
+   
     $expensesToPay = $colocation->expenses()->with(['payer', 'category'])
         ->get()
         ->filter(function ($expense) use ($userId, $members) {
-            // Skip if user is the payer or if marked as paid
+            // Skip  user is the payer or if marked as paid
             return $expense->user_id !== $userId && ($expense->paid ?? 0) != 1;
         })
         ->map(function ($expense) use ($userId, $members) {
@@ -124,32 +123,32 @@ public function show(Colocation $colocation)
 {
     $user = auth()->user();
 
-    // Check if the user is a member
+    // vheck  the user is a member
     $membership = $colocation->users()->where('user_id', $user->id)->first();
     if (!$membership) {
         abort(403, 'Vous ne faites pas partie de cette colocation.');
     }
 
-    // Simple check: does the user have any unpaid expense shares?
+    // check user have any unpaid expense
     $hasDebt = false;
 
     foreach ($colocation->expenses as $expense) {
         if ($expense->user_id !== $user->id && !$expense->paid) {
             $hasDebt = true;
-            break; // stop checking if we found one
+            break; 
         }
     }
 
-    // Update reputation
+    
     if ($hasDebt) {
-        $user->reputation -= 1; // owes money
+        $user->reputation -= 1;
     } else {
-        $user->reputation += 1; // no debt
+        $user->reputation += 1; 
     }
 
     $user->save();
 
-    // Remove user from colocation
+    
     $colocation->users()->detach($user->id);
 
     return redirect()

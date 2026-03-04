@@ -50,12 +50,12 @@ class InvitationsController extends Controller
         ->with('success', "Invitation envoyée à {$request->email} !");
     }
 
-    // Accept the invitation using the token
+   
     public function accept($token)
     {
         $invitation = Invitation::where('token', $token)->firstOrFail();
 
-        // Attach the user to the colocation
+        
         $invitation->colocation->users()->attach(Auth::id(), [
             'role_intern' => 'member',
             'joined_at' => now(),

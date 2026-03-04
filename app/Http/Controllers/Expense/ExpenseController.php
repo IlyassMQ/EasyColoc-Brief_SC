@@ -29,12 +29,10 @@ class ExpenseController extends Controller
         abort(403, 'Vous ne faites pas partie de cette colocation.');
     }
 
-    // Determine category ID
     if ($request->filled('new_category')) {
-        // Create new category attached to this colocation
         $category = Category::firstOrCreate([
             'name' => $request->new_category,
-            'colocation_id' => $colocation->id, // important!
+            'colocation_id' => $colocation->id, 
         ]);
         $categoryId = $category->id;
     } elseif ($request->filled('category_id')) {
@@ -43,7 +41,6 @@ class ExpenseController extends Controller
         return back()->withErrors(['category_id' => 'Vous devez sélectionner ou créer une catégorie'])->withInput();
     }
 
-    // Create the expense
     Expense::create([
         'title' => $request->title,
         'amount' => $request->amount,
@@ -62,7 +59,7 @@ class ExpenseController extends Controller
     {
         $expense = Expense::findOrFail($id);
 
-        // Only owner of the colocation can mark as paid
+        // Only owner can mark  paid
         if (auth()->id() !== $expense->colocation->users->firstWhere('pivot.role_intern', 'owner')->id) {
             abort(403, 'Seul le propriétaire peut marquer une dépense comme payée.');
         }
