@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 
 
 // --- 2. ROUTES UTILISATEURS CONNECTÉS (BREEZE + APP) ---
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified','not.banned'])->group(function () {
     
     
 // Profil (Breeze)

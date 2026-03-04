@@ -54,17 +54,16 @@ public function show(Colocation $colocation)
     $memberCount = $members->count();
     $userId = auth()->id();
 
-    // All expenses for the “Dernières Dépenses” section
     $allExpenses = $colocation->expenses()->with(['payer', 'category'])
         ->latest()
         ->take(10)
         ->get();
 
-    // Expenses for "Ce que je dois payer"
+   
     $expensesToPay = $colocation->expenses()->with(['payer', 'category'])
         ->get()
         ->filter(function ($expense) use ($userId, $members) {
-            // Skip if user is the payer or if marked as paid
+            // Skip  user is the payer or if marked as paid
             return $expense->user_id !== $userId && ($expense->paid ?? 0) != 1;
         })
         ->map(function ($expense) use ($userId, $members) {
@@ -121,33 +120,41 @@ public function show(Colocation $colocation)
             ->with('success', 'Colocation annulée avec succès.');
     }
     public function quit(Colocation $colocation)
-    {
+{
     $user = auth()->user();
 
+    // vheck  the user is a member
     $membership = $colocation->users()->where('user_id', $user->id)->first();
     if (!$membership) {
         abort(403, 'Vous ne faites pas partie de cette colocation.');
     }
 
-    $hasDebt = $colocation->payments()
-        ->where('payer_id', $user->id)
-        ->whereColumn('payer_id', '!=', 'receiver_id')
-        ->exists();
+    // check user have any unpaid expense
+    $hasDebt = false;
+
+    foreach ($colocation->expenses as $expense) {
+        if ($expense->user_id !== $user->id && !$expense->paid) {
+            $hasDebt = true;
+            break; 
+        }
+    }
 
     
     if ($hasDebt) {
-        $user->reputation -= 1; 
+        $user->reputation -= 1;
     } else {
-        $user->reputation += 1;
+        $user->reputation += 1; 
     }
+
     $user->save();
 
+    
     $colocation->users()->detach($user->id);
 
     return redirect()
         ->route('colocations.index')
         ->with('success', 'Vous avez quitté la colocation !');
-    }
+}
     
     private function isOwner(Colocation $colocation)
     {

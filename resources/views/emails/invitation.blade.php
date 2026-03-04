@@ -9,6 +9,5 @@ Cliquez sur le bouton ci-dessous pour accepter l'invitation :
 Rejoindre la colocation
 @endcomponent
 
-Merci,<br>
-{{ config('app.name') }}
+Merci,
 @endcomponent
